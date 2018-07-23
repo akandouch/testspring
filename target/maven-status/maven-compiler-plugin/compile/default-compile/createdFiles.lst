@@ -1,0 +1,12 @@
+com\aka\testspring\SpringConfig.class
+com\aka\controller\GenericController.class
+com\aka\testspring\App.class
+com\aka\testspring\repository\GenericRepo.class
+com\aka\testspring\dao\ProductDAOImpl.class
+com\aka\controller\ProductControllerImpl.class
+com\aka\testspring\PersistenceConfig$1.class
+com\aka\testspring\dao\GenericDAO.class
+com\aka\domain\ProductDomain.class
+com\aka\testspring\PersistenceConfig.class
+com\aka\testspring\repository\ProductRepoImpl.class
+com\aka\testspring\models\Product.class

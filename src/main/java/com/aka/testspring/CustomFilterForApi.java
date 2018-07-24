@@ -13,27 +13,52 @@ import javax.servlet.ServletResponse;
 import javax.servlet.ServletResponseWrapper;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.web.FilterChainProxy;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-public class CustomFilterForApi extends FilterChainProxy{
+public class CustomFilterForApi extends BasicAuthenticationFilter{
 	
+	private AuthenticationManager authenticationManager;
+	public CustomFilterForApi(AuthenticationManager authenticationManager) {
+		super(authenticationManager);
+		this.authenticationManager = authenticationManager;
+		// TODO Auto-generated constructor stub
+	}
 	
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		// TODO Auto-generated method stub
-		//super.doFilter(request, response, chain);
 		
-		System.out.println(request.getParameterMap().toString());
-		
+		System.out.println("CustomFilterForApi : " + request.getParameterMap().toString());
+				
 		if( response instanceof HttpServletResponse) {
-		HttpServletResponse httpServletResp = (HttpServletResponse) response;
-		HttpServletResponseWrapper respHTTP = new HttpServletResponseWrapper(httpServletResp) ;
-		respHTTP.setStatus(403);
-		chain.doFilter(request, respHTTP.getResponse());}
+			
+			System.out.println("response http");
+			HttpServletResponse httpServletResp = (HttpServletResponse) response;
+			HttpServletResponseWrapper respHTTP = new HttpServletResponseWrapper(httpServletResp) ;
+			
+			
+			
+			HttpServletRequest httpServletReq = (HttpServletRequest) request;
+			HttpServletRequestWrapper reqHttp = new HttpServletRequestWrapper(httpServletReq);
+
+			String authorisation = reqHttp.getHeader("Authorization");
+			System.out.println("authorisation " + authorisation);
+			
+			if( authorisation == null || !authorisation.contains("Bearer") ) {
+				respHTTP.sendError(401, "Not authorised please provide token");
+			}
+			chain.doFilter(request, respHTTP.getResponse());
+		}else {
+			System.out.println("response no http");
+			chain.doFilter(request, response);
+		}
 		
 	}
 
